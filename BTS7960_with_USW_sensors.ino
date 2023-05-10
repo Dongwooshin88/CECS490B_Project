@@ -1,54 +1,68 @@
 // Pin definitions
 
-// pins for motor 1 (RIGHT)
-#define RPWM_1 3 // define pin 3 for RPWM pin (output)
-#define R_EN_1 4 // define pin 2 for R_EN pin (input)
-#define R_IS_1 5 // define pin 5 for R_IS pin (output)
+// pins for motor 1 (Back_RIGHT)
+#define Back_RPWM_1 3 // define pin 3 for RPWM pin (output)
+#define Back_R_EN_1 34 // define pin 2 for R_EN pin (input)
+#define Back_R_IS_1 35 // define pin 5 for R_IS pin (output)
 
-#define LPWM_1 6 // define pin 6 for LPWM pin (output)
-#define L_EN_1 7 // define pin 7 for L_EN pin (input)
-#define L_IS_1 8 // define pin 8 for L_IS pin (output)
+#define Back_LPWM_1 4 // define pin 6 for LPWM pin (output)
+#define Back_L_EN_1 36 // define pin 7 for L_EN pin (input)
+#define Back_L_IS_1 37 // define pin 8 for L_IS pin (output)
 // motor 1 pins end here
 
-// pins for motor 2( LEFT)
-#define RPWM_2 9 // define pin 9 for RPWM pin (output)
-#define R_EN_2 10 // define pin 10 for R_EN pin (input)
-#define R_IS_2 12 // define pin 12 for R_IS pin (output)
+// pins for motor 2( Back_LEFT)
+#define Back_RPWM_2 5 // define pin 9 for RPWM pin (output)
+#define Back_R_EN_2 38 // define pin 10 for R_EN pin (input)
+#define Back_R_IS_2 39 // define pin 12 for R_IS pin (output)
 
-#define LPWM_2 11 // define pin 11 for LPWM pin (output)
-#define L_EN_2 A0 // define pin 7 for L_EN pin (input)
-#define L_IS_2 A1 // define pin 8 for L_IS pin (output)
+#define Back_LPWM_2 6 // define pin 11 for LPWM pin (output)
+#define Back_L_EN_2 40 // define pin 7 for L_EN pin (input)
+#define Back_L_IS_2 41 // define pin 8 for L_IS pin (output)
 
+// pins for motor 1 (Front_RIGHT)
+#define Front_RPWM_1 7 // define pin 3 for RPWM pin (output)
+#define Front_R_EN_1 28 // define pin 2 for R_EN pin (input)
+#define Front_R_IS_1 29 // define pin 5 for R_IS pin (output)
+
+#define Front_LPWM_1 8 // define pin 6 for LPWM pin (output)
+#define Front_L_EN_1 30 // define pin 7 for L_EN pin (input)
+#define Front_L_IS_1 31 // define pin 8 for L_IS pin (output)
+// motor 1 pins end here
+
+// pins for motor 2( Front_LEFT)
+#define Front_RPWM_2 9 // define pin 9 for RPWM pin (output)
+#define Front_R_EN_2 50 // define pin 10 for R_EN pin (input)
+#define Front_R_IS_2 51 // define pin 12 for R_IS pin (output)
+
+#define Front_LPWM_2 10 // define pin 11 for LPWM pin (output)
+#define Front_L_EN_2 52 // define pin 7 for L_EN pin (input)
+#define Front_L_IS_2 53 // define pin 8 for L_IS pin (output)
 //pins for ultra sonic wave sensor
 
-//left
-#define trigPin1 22
-#define echoPin1 23
 
 //front left
-#define trigPin2 24
-#define echoPin2 25
+#define trigPin2 22
+#define echoPin2 23
 
 //front
-#define trigPin3 26
-#define echoPin3 27
+#define trigPin3 24
+#define echoPin3 25
 
 //front right
-#define trigPin4 28
-#define echoPin4 29
+#define trigPin4 26
+#define echoPin4 27
 
-//right
-#define trigPin5 30
-#define echoPin5 31
 
 #define CW 1 //
 #define CCW 0 //
 #define debug 1 //
 
 #include <BTS7960.h>
-BTS7960 motor_RIGHT(R_EN_1,RPWM_1,R_IS_1, L_EN_1,LPWM_1,L_IS_1,debug);//define motor 1 object
-BTS7960 motor_LEFT(R_EN_2,RPWM_2,R_IS_2, L_EN_2,LPWM_2,L_IS_2,debug);//define motor 2 object and the same way for other motors
+BTS7960 Front_motor_RIGHT(Front_R_EN_1, Front_RPWM_1, Front_R_IS_1, Front_L_EN_1, Front_LPWM_1, Front_L_IS_1, debug);//define motor 1 object
+BTS7960 Front_motor_LEFT (Front_R_EN_2, Front_RPWM_2, Front_R_IS_2, Front_L_EN_2, Front_LPWM_2, Front_L_IS_2, debug);//define motor 2 object and the same way for other motors
 
+BTS7960 Back_motor_RIGHT(Back_R_EN_1, Back_RPWM_1, Back_R_IS_1, Back_L_EN_1, Back_LPWM_1, Back_L_IS_1, debug);//define motor 1 object
+BTS7960 Back_motor_LEFT (Back_R_EN_2, Back_RPWM_2, Back_R_IS_2, Back_L_EN_2, Back_LPWM_2, Back_L_IS_2, debug);//define motor 2 object and the same way for other motors
 
 // Variables for distance measurement
 long duration1, distance_Left;
@@ -63,8 +77,10 @@ int direction = 0;
 void setup() {
 
   //Set motors    
-  motor_RIGHT.begin();
-  motor_LEFT.begin();   
+  Front_motor_RIGHT.begin();
+  Front_motor_LEFT.begin();
+  Back_motor_RIGHT.begin();
+  Back_motor_LEFT.begin();      
   // Set pin modes
 
 
@@ -105,37 +121,45 @@ void loop() {
   Serial.println(distance_Right);
 
 // Check if there is an obstacle in front
-  if (distance_Front < 20) {
+  if (distance_Front < 200) {
     // Stop the cart
-    motor_LEFT.stop();
-    motor_RIGHT.stop();
+    Front_motor_LEFT.rotate(0,CCW);// run motor at 3% speed in CCW direction
+    Front_motor_RIGHT.rotate(0,CCW);// run motor at 3% speed in CCW direction
+    Back_motor_LEFT.rotate(50,CCW);// run motor at 3% speed in CCW direction
+    Back_motor_RIGHT.rotate(50,CCW);// run motor at 3% speed in CCW direction
     delay(2000);
-     Serial.println("BACK_BACK_BACK_BACK_BACK_BACK_BACK_BACK_");
-    motor_LEFT.rotate(3,CCW);// run motor at 3% speed in CCW direction
-    motor_RIGHT.rotate(3,CCW);// run motor at 3% speed in CCW direction
+    Front_motor_LEFT.stop();
+    Front_motor_RIGHT.stop();
+    Back_motor_LEFT.stop();
+    Back_motor_RIGHT.stop();
+    // MOVING BACKWARD
     delay(2000);
-    motor_LEFT.stop();
-    motor_RIGHT.stop();
+    Front_motor_LEFT.rotate(50,CCW);// run motor at 3% speed in CCW direction
+    Front_motor_RIGHT.rotate(50,CCW);// run motor at 3% speed in CCW direction
+    Back_motor_LEFT.rotate(50,CCW);// run motor at 3% speed in CCW direction
+    Back_motor_RIGHT.rotate(50,CCW);// run motor at 3% speed in CCW direction
     delay(2000);
-      // Decide the direction to turn
-      //If the obstale is closer to front right sensor, it turns left
-      if (distance_F_Left > distance_F_Right) {
-        Serial.println("LEFT_LEFT_LEFT_LEFT_LEFT_LEFT_LEFT_LEFT_");
-        motor_LEFT.rotate(3,CCW);// run motor at 3% speed in CCW direction
-        motor_RIGHT.rotate(5,CW);// run motor at 5% speed in CW direction
-        delay(500);
-      }else{
-        Serial.println("RIGHT_RIGHT_RIGHT_RIGHT_RIGHT_RIGHT_RIGHT_RIGHT_");
-        motor_LEFT.rotate(5,CW);// run motor at 5% speed in CW direction
-        motor_RIGHT.rotate(3,CCW);// run motor at 3% speed in CCW direction
-        delay(500);
-      } 
+    Front_motor_LEFT.stop();
+    Front_motor_RIGHT.stop();
+    Back_motor_LEFT.stop();
+    Back_motor_RIGHT.stop();
+    delay(2000);
+   //TURN LEFT
+    Front_motor_LEFT.rotate (0,CW);// run motor at 3% speed in CW direction
+    Front_motor_RIGHT.rotate(100,CW);// run motor at 3% speed in CW direction
+    Back_motor_LEFT.rotate  (80,CCW);// run motor at 3% speed in CW direction
+    Back_motor_RIGHT.rotate (100,CW);// run motor at 3% speed in CW direction
+    delay(3000);//run for 3 seconds
+    
   }else{
     // No obstacle detected, continue moving forward
     Serial.println("FORWARD_FORWARD_FORWARD_FORWARD_FORWARD_FORWARD_FORWARD_");
-    motor_LEFT.rotate(3,CW);// run motor at 3% speed in CW direction
-    motor_RIGHT.rotate(3,CW);// run motor at 3% speed in CW direction
+    Front_motor_LEFT.rotate(0,CW);// run motor at 3% speed in CW direction
+    Front_motor_RIGHT.rotate(0,CW);// run motor at 3% speed in CW direction
+    Back_motor_LEFT.rotate(40,CW);// run motor at 3% speed in CW direction
+    Back_motor_RIGHT.rotate(40,CW);// run motor at 3% speed in CW direction
   }
+
 }
 // Measure distance using a ultrasonic sensor connected to the specified pins
 long measureDistance(int trigPin, int echoPin) {
